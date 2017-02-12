@@ -1,0 +1,29 @@
+{
+  "name": "yasjql",
+  "version": "0.1.0",
+  "description": "Yet Another Simple JSON Query Language",
+  "main": "index.js",
+  "scripts": {
+    "test-unit": "_mocha test/unit/**/*-test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.12.0",
+    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "chai": "^3.4.0",
+    "mocha": "^2.3.3",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0",
+    "dirty-chai": "^1.2.2"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}

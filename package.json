@@ -6,6 +6,11 @@
   "scripts": {
     "test-unit": "_mocha test/unit/**/*-test.js"
   },
+  "repository" :
+  {
+    "type" : "git",
+    "url" : "madtrick/yasjql"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

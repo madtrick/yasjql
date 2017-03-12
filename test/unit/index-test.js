@@ -286,5 +286,38 @@ describe('Query', function () {
       expect(result).to.eql([ { 3: {sum: 3} }, { 1: {sum: 2} }]);
     });
   });
+
+  it('can combine restrictions with an "or"', function () {
+    const items = [ {foo: 1}, {foo: 2}, {foo: 3} ];
+    const filter = { foo: [{eq: 1}, {eq: 2}] };
+
+    const query = new Query(items);
+
+    const result = query.find(filter).select();
+
+    expect(result).to.eql([ {foo: 1}, {foo: 2} ]);
+  });
+
+  it('can combine filters with an "or"', function () {
+    const items = [ {foo: 1, bar: 5}, {foo: 2, bar: 6}, {foo: 3} ];
+    const filter = [{foo: {eq: 1}}, {bar: {eq: 6}}];
+
+    const query = new Query(items);
+
+    const result = query.find(filter).select();
+
+    expect(result).to.eql([ {foo: 1, bar: 5}, {foo: 2, bar: 6} ]);
+  });
+
+  it('can combine filters and constraints an "or"', function () {
+    const items = [ {foo: 1, bar: 5}, {foo: 2, bar: 6}, {foo: 3}, {foo: 4} ];
+    const filter = [{foo: [{eq: 1}, {eq: 3}]}, {bar: {eq: 6}}];
+
+    const query = new Query(items);
+
+    const result = query.find(filter).select();
+
+    expect(result).to.eql([ {foo: 1, bar: 5}, {foo: 2, bar: 6}, {foo: 3} ]);
+  });
 });
 

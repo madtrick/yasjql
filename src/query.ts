@@ -1,13 +1,14 @@
-'use strict';
+import  * as _ from 'lodash';
 
-const _ = require('lodash');
-
-const project = require('./project');
-const filter = require('./filter');
-const order = require('./order');
+import project from './project';
+import filter from './filter';
+import order from './order';
 
 
 class GroupedCollection {
+  private groups
+  private orderBy
+
   constructor (groups) {
     this.groups = groups;
   }
@@ -23,6 +24,9 @@ class GroupedCollection {
 }
 
 class Collection {
+  private items
+  private orderBy
+
   constructor (items) {
     this.items = items;
   }
@@ -53,21 +57,20 @@ class Collection {
 }
 
 
-class Query {
-  constructor (items) {
-    if (!items) {
-      throw new Error('A query can not be created without a collection of items');
-    }
+export default class Query {
+  private items
+  private orderBy
 
+  constructor (items) {
     this.items = new Collection(items);
   }
 
-  find (filters) {
+  find (filters?) {
     this.items = this.items.filter(filters);
     return this;
   }
 
-  select (projections) {
+  select (projections?) {
     return this.items.select(projections);
   }
 
@@ -82,5 +85,3 @@ class Query {
     return this;
   }
 }
-
-module.exports = Query;

@@ -1,6 +1,4 @@
-'use strict';
-
-const _ = require('lodash');
+import * as _ from 'lodash';
 
 function sameTypeOperands (a, b) {
   return typeof a === typeof b;
@@ -95,7 +93,7 @@ function orFilters (filtersArray, items) {
   return items.filter(item => filtersArray.find(filters => applyFilters(filters, item)));
 }
 
-module.exports = function filter (filters, items) {
+export default function filter (filters, items) {
   if (Array.isArray(filters)) {
     return orFilters(filters, items);
   }

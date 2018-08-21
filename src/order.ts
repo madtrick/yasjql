@@ -1,6 +1,4 @@
-'use strict';
-
-const _ = require('lodash');
+import * as  _ from 'lodash';
 
 function c (conditions) {
   let ordering = ['asc'];
@@ -18,7 +16,7 @@ function c (conditions) {
   return { by, ordering };
 }
 
-module.exports = {
+const ORDERINGS = {
   orderBy: function by (items, conditions) {
     if (!conditions) {
       return items;
@@ -42,6 +40,8 @@ module.exports = {
       return _.orderBy(groups, group => group.projection[element], order.ordering);
     }
 
-    return module.exports.orderBy(groups, 'key');
+    return ORDERINGS.orderBy(groups, 'key');
   },
 };
+
+export default ORDERINGS

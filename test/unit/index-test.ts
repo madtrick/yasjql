@@ -1,19 +1,10 @@
-'use strict';
+import Query from '../../src/query';
 
-const Query = require('../../lib/query');
-
-const chai = require('../helper');
+import chai = require('../helper');
 
 const expect = chai.expect;
 
 describe('Query', function () {
-  describe('constructor', function () {
-    it('throws if no items are passed', function () {
-      expect(() => new Query())
-        .to.throw('A query can not be created without a collection of items')
-    });
-  });
-
   it('can get all the values', function () {
     const items = [ {foo: 1}, {foo: 2} ];
     const query = new Query(items);

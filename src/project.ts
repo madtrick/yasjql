@@ -1,8 +1,6 @@
-'use strict';
+import * as _ from 'lodash';
 
-const _ = require('lodash');
-
-module.exports = function project (items, projections) {
+export default function project (items, projections) {
   if (!projections) {
     return items;
   }

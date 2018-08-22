@@ -1,8 +1,7 @@
-import Query from '../../src/query';
 
-import chai = require('../helper');
+// import chai = require('../helper')
 
-const expect = chai.expect;
+// const expect = chai.expect
 
 describe('Query', function () {
   // it('can get all the values', function () {
@@ -310,5 +309,5 @@ describe('Query', function () {
 
   //   expect(result).to.eql([ {foo: 1, bar: 5}, {foo: 2, bar: 6}, {foo: 3} ]);
   // });
-});
+})
 

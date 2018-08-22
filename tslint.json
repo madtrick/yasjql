@@ -1,0 +1,11 @@
+{
+  "extends": "tslint-config-standard",
+  "rulesDirectory": [
+    "node_modules/tslint-microsoft-contrib"
+  ],
+  "rules": {
+    "mocha-avoid-only": "error",
+    "typedef": [true, "call-signature", "parameter", "member-variable-declaration"],
+    "no-consecutive-blank-lines": [true, 2]
+  }
+}

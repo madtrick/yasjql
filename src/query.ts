@@ -1,6 +1,6 @@
-import  * as _ from 'lodash';
+import * as _ from 'lodash'
 
-import project from './project';
+import project from './project'
 // import filter from './filter';
 // import order from './order';
 
@@ -30,7 +30,7 @@ class Collection<Item extends QueryableObject> {
   public orderBy?: OrderCondition
 
   constructor (items: Item[]) {
-    this.items = items;
+    this.items = items
   }
 
   // filter (filters?: any[]) {
@@ -39,7 +39,7 @@ class Collection<Item extends QueryableObject> {
   //   return this;
   // }
 
-  select (projections?: any[]) {
+  select (projections?: any[]): {[key: string]: any} {
     // return order.orderBy(project(this.items, projections), this.orderBy);
     return project(this.items, projections)
   }
@@ -61,11 +61,11 @@ class Collection<Item extends QueryableObject> {
 
 // Note: can we restrict the condition to be one key
 // of a generic type
-type GroupConditionFunction<Item> = ((item: Item) => any)
-type GroupingCondition<Item> = string | GroupConditionFunction<Item>
-function isFunctionCondition<Item> (condition: GroupingCondition<Item>): condition is GroupConditionFunction<Item> {
-  return _.isFunction(condition)
-}
+// type GroupConditionFunction<Item> = ((item: Item) => any)
+// type GroupingCondition<Item> = string | GroupConditionFunction<Item>
+// function isFunctionCondition<Item> (condition: GroupingCondition<Item>): condition is GroupConditionFunction<Item> {
+//   return _.isFunction(condition)
+// }
 
 // Note: can we restrict the number of properties in the object
 // i.e. avoid having { foo: 'desc', bar: 'asc' }
@@ -79,10 +79,10 @@ interface QueryableObject {
 export default class Query<Item extends QueryableObject> {
   private items: Collection<Item>
   // private groupedItems?: GroupedCollection<Item>
-  private orderBy?: OrderCondition
+  // private orderBy?: OrderCondition
 
   constructor (items: Item[]) {
-    this.items = new Collection(items);
+    this.items = new Collection(items)
     // this.groupedItems = undefined
   }
 
@@ -91,9 +91,9 @@ export default class Query<Item extends QueryableObject> {
   //   return this;
   // }
 
-  select (projections?: any[]) {
+  select (projections?: any[]): { [key: string]: any} {
     // return (this.groupedItems || this.items).select(projections);
-    return this.items.select(projections);
+    return this.items.select(projections)
   }
 
   // group (condition: GroupingCondition<Item>) {

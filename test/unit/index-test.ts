@@ -1,53 +1,75 @@
+import Query from '../../src/query'
+import chai = require('../helper')
 
-// import chai = require('../helper')
-
-// const expect = chai.expect
+const expect = chai.expect
 
 describe('Query', function () {
-  // it('can get all the values', function () {
-  //   const items = [ {foo: 1}, {foo: 2} ];
-  //   const query = new Query(items);
+  describe('#select', function () {
+    it('without arguments returns the source itmes', function () {
+      const items = [{ foo: 1 }, { foo: 2 }]
+      const query = new Query(items)
 
-  //   const result = query.find().select();
+      const result = query.select()
 
-  //   expect(result).to.eql(items);
-  // });
+      expect(result).to.eql(items)
+    })
 
-  // it('can get all the values of a given column', function () {
-  //   const items = [ {foo: 1, bar: 1}, {foo: 2, bar: 2} ];
-  //   const query = new Query(items);
+    it('can get all the values of a given column', function () {
+      const items = [ { foo: 1, bar: 1 }, { foo: 2, bar: 2 } ]
+      const query = new Query(items)
 
-  //   const result = query.find().select(['foo']);
+      const result = query.select(['foo'])
 
-  //   expect(result).to.eql([ {foo: 1}, {foo: 2} ]);
-  // });
+      expect(result).to.eql([ { foo: 1 }, { foo: 2 } ])
+    })
 
-  // it('can get all the uniq values of a given column', function () {
-  //   const items = [ {foo: 1}, {foo: 2}, {foo: 2} ];
-  //   const query = new Query(items);
+    it('can get all the values of the given columns', function () {
+      const items = [ { foo: 1, bar: 1, baz: 1 }, { foo: 2, bar: 2, baz: 2 } ]
+      const query = new Query(items)
 
-  //   const result = query.find().select({ uniq: 'foo' });
+      const result = query.select(['foo', 'bar'])
 
-  //   expect(result).to.eql([ {foo: 1}, {foo: 2} ]);
-  // });
+      expect(result).to.eql([ { foo: 1, bar: 1 }, { foo: 2, bar: 2 } ])
+    })
 
-  // it('can get all the values of the given columns', function () {
-  //   const items = [ {foo: 1, bar: 1, baz: 1}, {foo: 2, bar: 2, baz: 2} ];
-  //   const query = new Query(items);
+    it('can get all the values of the given columns (alias)', function () {
+      const items = [ { foo: 1, bar: 1, baz: 1 }, { foo: 2, bar: 2, baz: 2 } ]
+      const query = new Query(items)
 
-  //   const result = query.find().select(['foo', 'bar']);
+      const result = query.select({ foo: { as: 'lol' } })
 
-  //   expect(result).to.eql([ {foo: 1, bar: 1}, {foo: 2, bar: 2} ]);
-  // });
+      expect(result).to.eql([ { lol: 1 }, { lol: 2 } ])
+    })
 
-  // it('can get all the values of the given columns (alias)', function () {
-  //   const items = [ {foo: 1, bar: 1, baz: 1}, {foo: 2, bar: 2, baz: 2} ];
-  //   const query = new Query(items);
+    it('can get all the uniq values of a given column', function () {
+      const items = [ { foo: 1 }, { foo: 2 }, { foo: 2 } ]
+      const query = new Query(items)
 
-  //   const result = query.find().select({foo: {as: 'lol'}});
+      const result = query.select({ uniq: 'foo' })
 
-  //   expect(result).to.eql([ {lol: 1}, {lol: 2} ]);
-  // });
+      expect(result).to.eql([ { foo: 1 }, { foo: 2 } ])
+    })
+
+    describe('agregations', function () {
+      it('can get the max value of a given column', function () {
+        const items = [ { foo: 1 }, { foo: 2 } ]
+        const query = new Query(items)
+
+        const result = query.select({ max: 'foo' })
+
+        expect(result).to.eql({ max: 2 })
+      })
+
+      it('can get the sum of the values of a given column', function () {
+        const items = [ { foo: 1 }, { foo: 2 } ]
+        const query = new Query(items)
+
+        const result = query.select({ sum: 'foo' })
+
+        expect(result).to.eql({ sum: 3 })
+      })
+    })
+  })
 
   // describe('groups', function () {
   //   // throws if given more than one grouping condition
@@ -189,26 +211,6 @@ describe('Query', function () {
   //         });
   //       });
   //     });
-  //   });
-  // });
-
-  // describe('agregations', function () {
-  //   it('can get the max of the values for a given column', function () {
-  //     const items = [ {foo: 1}, {foo: 2} ];
-  //     const query = new Query(items);
-
-  //     const result = query.find().select({max: 'foo'});
-
-  //     expect(result).to.eql({max: 2});
-  //   });
-
-  //   it('can get the sum of the values of a given column', function () {
-  //     const items = [ {foo: 1}, {foo: 2} ];
-  //     const query = new Query(items);
-
-  //     const result = query.find().select({sum: 'foo'});
-
-  //     expect(result).to.eql({sum: 3});
   //   });
   // });
 

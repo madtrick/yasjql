@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-import project from './project'
+import project, { ProjectionDefinition } from './project'
 // import filter from './filter';
 // import order from './order';
 
@@ -39,7 +39,7 @@ class Collection<Item extends QueryableObject> {
   //   return this;
   // }
 
-  select (projections?: any[]): {[key: string]: any} {
+  select (projections?: ProjectionDefinition): {[key: string]: any} {
     // return order.orderBy(project(this.items, projections), this.orderBy);
     return project(this.items, projections)
   }
@@ -72,7 +72,7 @@ class Collection<Item extends QueryableObject> {
 type OrderCondition = string | { [key: string]: 'asc' | 'desc' }
 
 
-interface QueryableObject {
+export interface QueryableObject {
   [key: string]: boolean | string | number | QueryableObject
 }
 
@@ -91,7 +91,7 @@ export default class Query<Item extends QueryableObject> {
   //   return this;
   // }
 
-  select (projections?: any[]): { [key: string]: any} {
+  select (projections?: ProjectionDefinition): { [key: string]: any} {
     // return (this.groupedItems || this.items).select(projections);
     return this.items.select(projections)
   }

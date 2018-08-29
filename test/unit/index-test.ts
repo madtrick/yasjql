@@ -36,7 +36,7 @@ describe('Query', function () {
       const items = [ { foo: 1, bar: 1, baz: 1 }, { foo: 2, bar: 2, baz: 2 } ]
       const query = new Query(items)
 
-      const result = query.select({ foo: { as: 'lol' } })
+      const result = query.select({ alias: { foo: 'lol' } })
 
       expect(result).to.eql([ { lol: 1 }, { lol: 2 } ])
     })

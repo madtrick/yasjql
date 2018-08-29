@@ -1,44 +1,42 @@
 import * as _ from 'lodash'
 
-import { QueryableObject } from './query'
-
-interface MaxProjection {
-  max: string
+interface MaxProjection<T> {
+  max: keyof T
 }
 
-interface SumProjection {
-  sum: string
+interface SumProjection<T> {
+  sum: Extract<keyof T, string>
 }
 
-interface UniqProjection {
-  uniq: string
+interface UniqProjection<T> {
+  uniq: Extract<keyof T, string>
 }
 
-interface AliasProjection {
-  [key: string]: { as: string }
-}
-// Note: we can use the keyof instead of just a plain string
-export type ProjectionDefinition =
-  string[]
-  | AliasProjection
-  | MaxProjection
-  | SumProjection
-  | UniqProjection
-
-function isMaxProjection (projection: ProjectionDefinition): projection is MaxProjection {
-  return !!(projection as MaxProjection).max
+interface AliasProjection<T> {
+  alias: { [key in keyof T]?: string }
 }
 
-function isSumProjection (projection: ProjectionDefinition): projection is SumProjection {
-  return !!(projection as SumProjection).sum
+export type ProjectionDefinition<T> =
+  (keyof T)[]
+  | MaxProjection<T>
+  | SumProjection<T>
+  | UniqProjection<T>
+  | AliasProjection<T>
+
+function isMaxProjection<T> (projection: ProjectionDefinition<T>): projection is MaxProjection<T> {
+  return !!(projection as MaxProjection<T>).max
 }
 
-function isUniqProjection (projection: ProjectionDefinition): projection is UniqProjection {
-  return !!(projection as UniqProjection).uniq
+function isSumProjection<T> (projection: ProjectionDefinition<T>): projection is SumProjection<T> {
+  return !!(projection as SumProjection<T>).sum
+}
+
+function isUniqProjection<T> (projection: ProjectionDefinition<T>): projection is UniqProjection<T> {
+  return !!(projection as UniqProjection<T>).uniq
 }
 
 // Note: add a generic type to the QueryableObject
-export default function project (items: QueryableObject[], projections?: ProjectionDefinition): {[key: string]: any} {
+export default function project<T> (items: T[], projections?: ProjectionDefinition<T>): {[key: string]: any} {
   if (!projections) {
     return items
   }
@@ -49,7 +47,7 @@ export default function project (items: QueryableObject[], projections?: Project
 
   if (isMaxProjection(projections)) {
     const col = projections.max
-    const max: { [key: string]: any } = _.sortBy(items, [col])[items.length - 1]
+    const max: T = _.sortBy(items, [col])[items.length - 1]
 
     return { max: max[col] }
   }
@@ -63,17 +61,21 @@ export default function project (items: QueryableObject[], projections?: Project
 
   if (isUniqProjection(projections)) {
     const col = projections.uniq
-    const values = _.uniq(items.map((i: QueryableObject) => i[col]))
+    const values = _.uniq(items.map((i: T) => i[col]))
 
     return values.map(value => ({ [col]: value }))
   }
 
-  const columns = Object.keys(projections)[0]
-  const as = projections[columns].as
+  const aliases = projections.alias
+  const toAliasKeys = Object.keys(aliases)
 
-  return items.map((item: QueryableObject) => {
-    const clone = { [as]: item[columns] }
+  return items.map((item: T) => {
+    // Note: can we improve the type of "mapped"?
+    return toAliasKeys.reduce((mapped: { [key: string]: any }, toAliasKey) => {
+      const newKey = aliases[toAliasKey as Extract<keyof T, string>]
+      mapped[newKey!] = item[toAliasKey as Extract<keyof T, string>]
 
-    return clone
+      return mapped
+    }, {})
   })
 }

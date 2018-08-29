@@ -39,7 +39,7 @@ class Collection<Item extends QueryableObject> {
   //   return this;
   // }
 
-  select (projections?: ProjectionDefinition): {[key: string]: any} {
+  select (projections?: ProjectionDefinition<Item>): {[key: string]: any} {
     // return order.orderBy(project(this.items, projections), this.orderBy);
     return project(this.items, projections)
   }
@@ -91,7 +91,7 @@ export default class Query<Item extends QueryableObject> {
   //   return this;
   // }
 
-  select (projections?: ProjectionDefinition): { [key: string]: any} {
+  select (projections?: ProjectionDefinition<Item>): { [key: string]: any} {
     // return (this.groupedItems || this.items).select(projections);
     return this.items.select(projections)
   }

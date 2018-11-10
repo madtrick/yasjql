@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 
 import project, { ProjectionDefinition } from './project'
-// import filter from './filter';
+import Foo, { Filter } from './simple-filter'
 // import order from './order';
 
 
@@ -33,11 +33,11 @@ class Collection<Item extends QueryableObject> {
     this.items = items
   }
 
-  // filter (filters?: any[]) {
-  //   this.items = filter(filters, this.items);
+  filter (filter?: Filter<Item>): Collection<Item> {
+    this.items = Foo(filter, this.items)
 
-  //   return this;
-  // }
+    return this
+  }
 
   select (projections?: ProjectionDefinition<Item>): {[key: string]: any} {
     // return order.orderBy(project(this.items, projections), this.orderBy);
@@ -73,7 +73,7 @@ type OrderCondition = string | { [key: string]: 'asc' | 'desc' }
 
 
 export interface QueryableObject {
-  [key: string]: boolean | string | number | QueryableObject
+  [key: string]: boolean | string | number | Date | QueryableObject
 }
 
 export default class Query<Item extends QueryableObject> {
@@ -86,10 +86,10 @@ export default class Query<Item extends QueryableObject> {
     // this.groupedItems = undefined
   }
 
-  // find (filters?: any[]) {
-  //   this.items = this.items.filter(filters);
-  //   return this;
-  // }
+  find (filter?: Filter<Item>): { [key: string]: any } {
+    this.items = this.items.filter(filter)
+    return this
+  }
 
   select (projections?: ProjectionDefinition<Item>): { [key: string]: any} {
     // return (this.groupedItems || this.items).select(projections);

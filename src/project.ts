@@ -35,8 +35,7 @@ function isUniqProjection<T> (projection: ProjectionDefinition<T>): projection i
   return !!(projection as UniqProjection<T>).uniq
 }
 
-// Note: add a generic type to the QueryableObject
-export default function project<T> (items: T[], projections?: ProjectionDefinition<T>): {[key: string]: any} {
+export default function project<T extends { [key: string]: any }> (items: T[], projections?: ProjectionDefinition<T>): {[key: string]: any} {
   if (!projections) {
     return items
   }
@@ -72,8 +71,8 @@ export default function project<T> (items: T[], projections?: ProjectionDefiniti
   return items.map((item: T) => {
     // Note: can we improve the type of "mapped"?
     return toAliasKeys.reduce((mapped: { [key: string]: any }, toAliasKey) => {
-      const newKey = aliases[toAliasKey as Extract<keyof T, string>]
-      mapped[newKey!] = item[toAliasKey as Extract<keyof T, string>]
+      const newKey = aliases[toAliasKey]
+      mapped[newKey!] = item[toAliasKey]
 
       return mapped
     }, {})

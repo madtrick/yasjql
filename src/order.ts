@@ -1,47 +1,54 @@
-// import * as  _ from 'lodash';
+import { at, isString, isPlainObject, orderBy } from 'lodash'
 
-// function c (conditions) {
-//   let ordering = ['asc'];
-//   let by;
+function c<T> (condition: OrderCondition<T>): { by: Extract<keyof T, string>, direction: OrderDirection } {
+  let direction: OrderDirection
+  let by: Extract<keyof T, string>
 
-//   if (_.isString(conditions)) {
-//     by = conditions;
-//   }
+  // Note: had to add the `typeof` check as otherwise TS won't consider
+  // "condition" as a string inside the "if"
+  if (isString(condition) && typeof condition === 'string') {
+    by = condition
+    direction = 'asc'
+  }
 
-//   if (_.isPlainObject(conditions)) {
-//     by = Object.keys(conditions)[0];
-//     ordering = [conditions[by]];
-//   }
+  // Note: maybe throw if more than one one key present in the object
+  // Note: had to add the `typeof` check as otherwise TS won't consider
+  // "condition" as an object inside the "if"
+  if (isPlainObject(condition) && typeof condition === 'object') {
+    by = Object.keys(condition)[0] as Extract<keyof T, string>
+    direction = condition[by]
+  }
 
-//   return { by, ordering };
-// }
+  return { by, direction }
+}
 
-// const ORDERINGS = {
-//   orderBy: function by (items, conditions) {
-//     if (!conditions) {
-//       return items;
-//     }
+// Note: can we restrict the number of properties in the object
+// i.e. avoid having { foo: 'desc', bar: 'asc' }
+export type OrderCondition<T> = Extract<keyof T, string> | { [key in Extract<keyof T, string>]: OrderDirection }
+type OrderDirection = 'asc' | 'desc'
 
-//     const order = c(conditions);
+const ORDERINGS = {
+  orderBy: function by<T extends object> (items: T[], condition: OrderCondition<T>): T[] {
+    const order = c(condition)
 
-//     return _.orderBy(items, el => _.at(el, order.by), order.ordering);
-//   },
+    return orderBy(items, item => at(item, [order.by]), [order.direction])
+  }
 
-//   orderGroupsBy: function groupBy (groups, condition) {
-//     if (!condition) {
-//       return groups;
-//     }
+  // orderGroupsBy: function groupBy (groups, condition) {
+  //   if (!condition) {
+  //     return groups
+  //   }
 
-//     const order = c(condition);
+  //   const order = c(condition)
 
-//     if (order.by.split('.').length > 1) {
-//       const element = order.by.split('.')[1];
+  //   if (order.by.split('.').length > 1) {
+  //     const element = order.by.split('.')[1]
 
-//       return _.orderBy(groups, group => group.projection[element], order.ordering);
-//     }
+  //     return _.orderBy(groups, group => group.projection[element], order.ordering)
+  //   }
 
-//     return ORDERINGS.orderBy(groups, 'key');
-//   },
-// };
+  //   return ORDERINGS.orderBy(groups, 'key')
+  // }
+}
 
-// export default ORDERINGS
+export default ORDERINGS

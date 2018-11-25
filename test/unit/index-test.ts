@@ -231,31 +231,31 @@ describe('Query', function () {
   })
 
   describe('ordering', function () {
-    // it('orders the result set', function () {
-    //   const items = [{ foo: 2 }, { foo: 1 }]
-    //   const query = new Query(items)
+    it('orders the result set', function () {
+      const items = [{ foo: 2 }, { foo: 1 }]
+      const query = new Query(items)
 
-    //   const result = query.find().order('foo').select()
+      const result = query.find().order('foo').select()
 
-    //   expect(result).to.eql([{ foo: 1 }, { foo: 2 }])
-    // })
+      expect(result).to.eql([{ foo: 1 }, { foo: 2 }])
+    })
 
-    // it('orders the result set (descending)', function () {
-    //   const items = [{ foo: 1 }, { foo: 2 }]
-    //   const query = new Query(items)
+    it('orders the result set (descending)', function () {
+      const items = [{ foo: 1 }, { foo: 2 }]
+      const query = new Query(items)
 
-    //   const result = query.find().order({ foo: 'desc' }).select()
+      const result = query.find().order({ foo: 'desc' }).select()
 
-    //   expect(result).to.eql([{ foo: 2 }, { foo: 1 }])
-    // })
+      expect(result).to.eql([{ foo: 2 }, { foo: 1 }])
+    })
 
     // it('orders the nested result set', function () {
-    //   const items = [ {foo: {bar: 2}}, {foo: {bar: 1}} ]
+    //   const items = [{ foo: { bar: 2 } }, { foo: { bar: 1 } }]
     //   const query = new Query(items)
 
     //   const result = query.find().order('foo.bar').select()
 
-    //   expect(result).to.eql([ {foo: {bar: 1}}, {foo: {bar: 2}} ])
+    //   expect(result).to.eql([ { foo: { bar: 1 } }, { foo: { bar: 2 } } ])
     // })
 
     // it('orders the nested result set (descending)', function () {
@@ -267,14 +267,14 @@ describe('Query', function () {
     //   expect(result).to.eql([ {foo: {bar: 2}}, {foo: {bar: 1}} ])
     // })
 
-    // it('orders by group', function () {
-    //   const items = [ {foo: 3, bar: 2}, { foo: 1, bar: 1 }, {foo: 1, bar: 3} ]
-    //   const query = new Query(items)
+    it('orders by group', function () {
+      const items = [{ foo: 3, bar: 2 }, { foo: 1, bar: 1 }, { foo: 1, bar: 3 }]
+      const query = new Query(items)
 
-    //   const result = query.find().group('foo').order('foo').select()
+      const result = query.find().group({ by: 'foo' }).order('foo').select()
 
-    //   expect(result).to.eql([ { 1: [{ foo: 1, bar: 1 }, { foo: 1, bar: 3 }] }, { 3: [{ foo: 3, bar: 2 }] }])
-    // })
+      expect(result).to.eql([ { 1: [{ foo: 1, bar: 1 }, { foo: 1, bar: 3 }] }, { 3: [{ foo: 3, bar: 2 }] }])
+    })
 
     // it('orders by group aggregation', function () {
     //   const items = [ {foo: 3, bar: 2}, { foo: 1, bar: 1 }, {foo: 1, bar: 3} ]
@@ -295,16 +295,16 @@ describe('Query', function () {
     // })
   })
 
-  // it('can combine restrictions with an "or"', function () {
-  //   const items = [ {foo: 1}, {foo: 2}, {foo: 3} ]
-  //   const filter = { foo: [{eq: 1}, {eq: 2}] }
+  it('can combine restrictions with an "or"', function () {
+    const items = [{ foo: 1 }, { foo: 2 }, { foo: 3 }]
+    const filter = { foo: [{ eq: 1 }, { eq: 2 }] }
 
-  //   const query = new Query(items)
+    const query = new Query(items)
 
-  //   const result = query.find(filter).select()
+    const result = query.find(filter).select()
 
-  //   expect(result).to.eql([ {foo: 1}, {foo: 2} ])
-  // })
+    expect(result).to.eql([ { foo: 1 }, { foo: 2 } ])
+  })
 
   // it('can combine filters with an "or"', function () {
   //   const items = [ {foo: 1, bar: 5}, {foo: 2, bar: 6}, {foo: 3} ]

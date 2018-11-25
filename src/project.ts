@@ -23,11 +23,11 @@ export type ProjectionDefinition<T> =
   | SumProjection<T>
   | UniqProjection<T>
 
-function isMaxProjection<T> (projection: ProjectionDefinition<T>): projection is MaxProjection<T> {
+export function isMaxProjection<T> (projection: ProjectionDefinition<T>): projection is MaxProjection<T> {
   return !!(projection as MaxProjection<T>).max
 }
 
-function isSumProjection<T> (projection: ProjectionDefinition<T>): projection is SumProjection<T> {
+export function isSumProjection<T> (projection: ProjectionDefinition<T>): projection is SumProjection<T> {
   return !!(projection as SumProjection<T>).sum
 }
 
@@ -42,7 +42,7 @@ export type Projected<T, P> =
   P extends MaxProjection<T> ? { max: number } :
   P extends SumProjection<T> ? { sum: number } :
   P extends UniqProjection<T> ? Pick<T, keyof T>[] :
-  void
+  never
 
 export default function project<T extends { [key: string]: any }> (items: T[], projections?: ProjectionDefinition<T>): Projected<T, ProjectionDefinition<T>> {
   if (projections === undefined) {

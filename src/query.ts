@@ -1,8 +1,8 @@
 import { groupBy } from 'lodash'
 
-import project, { ProjectionDefinition, Projected } from './project'
+import project, { isSumProjection, isMaxProjection, ProjectionDefinition, Projected } from './project'
 import Foo, { Filter } from './simple-filter'
-// import order from './order';
+import order, { OrderCondition } from './order'
 
 class GroupedCollection<Item extends QueryableObject> {
   private groups: { key: string, items: Collection<Item> }[]
@@ -33,7 +33,7 @@ class GroupedCollection<Item extends QueryableObject> {
 class Collection<Item extends QueryableObject> {
   private items: Item[]
   // Note: make this private
-  public orderBy?: OrderCondition
+  public orderBy?: OrderCondition<Item>
 
   constructor (items: Item[]) {
     this.items = items
@@ -47,12 +47,32 @@ class Collection<Item extends QueryableObject> {
 
   select (projections?: ProjectionDefinition<Item>)
     : Projected<Item, ProjectionDefinition<Item>> {
-    // return order.orderBy(project(this.items, projections), this.orderBy);
     if (!projections) {
-      return this.items
+      if (!this.orderBy) {
+        return this.items
+      }
+
+      return order.orderBy(this.items, this.orderBy)
     }
 
-    return project(this.items, projections)
+    let projected = project(this.items, projections)
+
+    if (!this.orderBy) {
+      return projected
+    }
+
+    if (isSumProjection(projections)) {
+      throw Error('Can not use the "sum" projection together with ordering')
+    }
+
+    if (isMaxProjection(projections)) {
+      throw Error('Can not use the "max" projection together with ordering')
+    }
+
+    // Note: had to cast it or otherwise it still though "projected" could be
+    // of type { sum: ... } or { max: ... }
+    return order.orderBy(projected as (Item[] | Pick<Item, keyof Item>[]), this.orderBy)
+    // return project(this.items, projections)
   }
 
   group (condition: GroupingCondition<Item>): GroupedCollection<Item> {
@@ -73,10 +93,6 @@ class Collection<Item extends QueryableObject> {
 type GroupingConditionFunction<Item> = ((item: Item) => number | string)
 type GroupingCondition<Item> = { by: keyof Item | GroupingConditionFunction<Item> }
 
-// Note: can we restrict the number of properties in the object
-// i.e. avoid having { foo: 'desc', bar: 'asc' }
-type OrderCondition = string | { [key: string]: 'asc' | 'desc' }
-
 
 export interface QueryableObject {
   [key: string]: string | number | Date
@@ -85,7 +101,6 @@ export interface QueryableObject {
 export default class Query<Item extends QueryableObject> {
   private items: Collection<Item>
   private groupedItems?: GroupedCollection<Item>
-  // private orderBy?: OrderCondition
 
   constructor (items: Item[]) {
     this.items = new Collection(items)
@@ -103,16 +118,15 @@ export default class Query<Item extends QueryableObject> {
 
   select (projections?: ProjectionDefinition<Item>): { [key: string]: any} {
     return (this.groupedItems || this.items).select(projections)
-    return this.items.select(projections)
   }
 
   group (condition: GroupingCondition<Item>): Query<Item> {
     this.groupedItems = this.items.group(condition)
     return this
   }
-  // order (condition) {
-  //   this.orderBy = condition;
-  //   this.items.orderBy = condition;
-  //   return this;
-  // }
+
+  order (condition: OrderCondition<Item>): Query<Item> {
+    this.items.orderBy = condition
+    return this
+  }
 }

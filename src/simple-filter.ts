@@ -22,8 +22,17 @@ const STRING_FILTERS = {
   }
 }
 
-const NUMBER_FILTERS = {
-  // TODO: falta "in" para strings
+// type NumberFilters = {
+//   in: (itemValue: number, constraintValue: number[]) => boolean
+//   nin: (itemValue: number, constraintValue: number[]) => boolean
+//   eq: (itemValue: number, constraintValue: number) => boolean
+//   gt: (itemValue: number, constraintValue: number) => boolean
+//   lt: (itemValue: number, constraintValue: number) => boolean
+// }
+
+// Typing the args with any so we can't the typing system to play ball
+type NumberFilters = { [name in keyof NumberConstraint]: (itemValue: any, constraintValue: any) => boolean }
+const NUMBER_FILTERS: NumberFilters = {
   in: function inclusion (itemValue: number, constraintValue: number[]): boolean {
     return constraintValue.includes(itemValue)
   },
@@ -56,6 +65,9 @@ const DATE_FILTERS = {
 }
 
 type AtLeastOne<T, U = {[K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U]
+
+type FiltersFor<T extends ValidValue> = 
+  T extends number ? NumberFilters : never
 
 interface StringConstraint {
   match: string | RegExp
@@ -102,45 +114,27 @@ export default function filter<T extends { [key: string]: ValidValue }> (filter:
       const filterValue = filter[property]
       const value = item[property]
 
-      if (typeof value === 'string') {
-        const filterTypes = Object.keys(filterValue) as (keyof StringConstraint)[]
-        return filterTypes.every((filterType) => {
-          if (filterType === 'match') {
-            const constraintValue = (filterValue as StringConstraint)[filterType]
-            return STRING_FILTERS.match(value, constraintValue)
-          }
-
-          if (filterType === 'eq') {
-            const constraintValue = (filterValue as StringConstraint)[filterType]
-            return STRING_FILTERS.eq(value, constraintValue)
-          }
-
-          throw new Error(`Unsupported constraint ${filterType}`)
+      // Fucking types, can't get this to work with proper types
+      function andConstraints<K extends keyof T> (filterValue: any, item: T, key: K, filters: any): boolean {
+        const itemValue = item[key]
+        const filterKeys = Object.keys(filterValue)
+        return filterKeys.every((filterKey) => {
+          const constraintValue = filterValue[filterKey]
+          const filter = filters[filterKey]
+          return filter(itemValue, constraintValue)
         })
+      }
+
+      if (typeof value === 'string') {
+        return andConstraints(filterValue, item, property, STRING_FILTERS)
       }
 
       if (typeof value === 'number') {
-        const filterTypes = Object.keys(filterValue) as (keyof NumberConstraint)[]
-        return filterTypes.every((filterType) => {
-          if (filterType === 'eq' || filterType === 'gt' || filterType === 'lt') {
-            // Note: need this if for the Type engine to work properly
-            // due to the fact that constraintValue can be either be `number`
-            // or `number[]`
-            const constraintValue = (filterValue as NumberConstraint)[filterType]
-            return NUMBER_FILTERS[filterType](value, constraintValue)
-          }
-
-          const constraintValue = (filterValue as NumberConstraint)[filterType]
-          return NUMBER_FILTERS[filterType](value, constraintValue)
-        })
+        return andConstraints(filterValue, item, property, NUMBER_FILTERS)
       }
 
       if (value instanceof Date) {
-        const filterTypes = Object.keys(filterValue) as (keyof DateConstraints)[]
-        return filterTypes.every((filterType) => {
-          const constraintValue = (filterValue as DateConstraints)[filterType]
-          return DATE_FILTERS[filterType](value, constraintValue)
-        })
+        return andConstraints(filterValue, item, property, DATE_FILTERS)
       }
 
       throw new Error(`Unsupported value type "${typeof value}"`)

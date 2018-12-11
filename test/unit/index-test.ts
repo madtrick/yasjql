@@ -295,16 +295,27 @@ describe('Query', function () {
     // })
   })
 
-  it('can combine restrictions with an "or"', function () {
+  it('can combine restrictions', function () {
     const items = [{ foo: 1 }, { foo: 2 }, { foo: 3 }]
-    const filter = { foo: [{ eq: 1 }, { eq: 2 }] }
+    const filter = { foo: { gt: 1, lt: 3 } }
 
     const query = new Query(items)
 
     const result = query.find(filter).select()
 
-    expect(result).to.eql([ { foo: 1 }, { foo: 2 } ])
+    expect(result).to.eql([ { foo: 2 } ])
   })
+
+  // it('can combine restrictions with an "or"', function () {
+  //   const items = [{ foo: 1 }, { foo: 2 }, { foo: 3 }]
+  //   const filter = { foo: [{ eq: 1 }, { eq: 2 }] }
+
+  //   const query = new Query(items)
+
+  //   const result = query.find(filter).select()
+
+  //   expect(result).to.eql([ { foo: 1 }, { foo: 2 } ])
+  // })
 
   // it('can combine filters with an "or"', function () {
   //   const items = [ {foo: 1, bar: 5}, {foo: 2, bar: 6}, {foo: 3} ]

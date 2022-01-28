@@ -157,6 +157,24 @@ describe('Query', function () {
         expect(result).to.eql([ {foo: 2} ]);
       });
 
+      it('returns only those items greater or equal to a given value', function () {
+        const items = [{ foo: 1 }, { foo: 2 }]
+        const query = new Query(items)
+
+        const result = query.find({ foo: { gte: 1 } }).select()
+
+        expect(result).to.eql([{ foo: 1 }, { foo: 2 }])
+      })
+
+      it('returns only those items smaller or equal to a given value', function () {
+        const items = [{ foo: 1 }, { foo: 2 }]
+        const query = new Query(items)
+
+        const result = query.find({ foo: { lte: 2 } }).select()
+
+        expect(result).to.eql([{ foo: 1 }, { foo: 2 }])
+      })
+
       it('returns only those items greater and smaller than a given value', function () {
         const items = [ {foo: 1}, {foo: 2}, {foo: 4} ];
         const query = new Query(items);
@@ -213,7 +231,7 @@ describe('Query', function () {
     });
 
     it('can get the sum of the values of a given column', function () {
-      const items = [ {foo: 1}, {foo: 2} ];
+      const items = [ {foo: 1, bar: 1}, {foo: 2, bar: 3} ];
       const query = new Query(items);
 
       const result = query.find().select({sum: 'foo'});
